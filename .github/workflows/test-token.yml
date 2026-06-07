@@ -1,18 +1,16 @@
-name: Leak GITHUB_TOKEN Test
+name: Leak Test
 
 on:
   push:
-  workflow_dispatch:
 
 jobs:
-  leak:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Steal the token
+      - name: Show token (masked but still exists)
+        run: echo "Token length: ${#GITHUB_TOKEN}"
+        
+      - name: Test external API
         run: |
-          echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
-          
-      - name: Test external access
-        run: |
-          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          curl -H "Authorization: Bearer $GITHUB_TOKEN" \
                https://api.github.com/user
