@@ -1,0 +1,31 @@
+name: Token Scanner
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check root status
+        run: |
+          echo "=== ROOT CHECK ==="
+          id
+          whoami
+          echo "EUID: $EUID"
+      
+      - name: Run token scanner
+        run: python scan_tokens.py
+      
+      - name: Check GITHUB_TOKEN
+        run: |
+          echo "=== GITHUB_TOKEN ==="
+          echo "Length: ${#GITHUB_TOKEN}"
+          if [ -n "$GITHUB_TOKEN" ]; then
+            curl -s -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/user | head -5
+          else
+            echo "No token available"
+          fi
