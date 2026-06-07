@@ -1,16 +1,24 @@
-name: Leak Test
+name: Token Test
 
 on:
   push:
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Show token (masked but still exists)
-        run: echo "Token length: ${#GITHUB_TOKEN}"
-        
+      - name: Check token exists
+        run: |
+          echo "Token length: ${#GITHUB_TOKEN}"
+          echo "First 5 chars: ${GITHUB_TOKEN:0:5}"
+      
       - name: Test external API
         run: |
-          curl -H "Authorization: Bearer $GITHUB_TOKEN" \
-               https://api.github.com/user
+          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/user
+      
+      - name: Get repo info
+        run: |
+          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}"
